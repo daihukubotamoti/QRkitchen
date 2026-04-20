@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>QRキッチン</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru&display=swap" rel="stylesheet">
+
+  <!-- QRライブラリ -->
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling/lib/qr-code-styling.js"></script>
+  <style>
+    body {
+     font-family: sans-serif;
+     background: linear-gradient(135deg, #ffffff, #e5e7eb);
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+     margin: 0;
+    }
+
+    /* ガラスUI */
+    .container {
+    /* ガラスUI */
+     background: rgba(255, 255, 255, 0.4);
+     backdrop-filter: blur(15px);
+     -webkit-backdrop-filter: blur(15px);
+     text-align: center;
+
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+
+    /* 光の演出のために必要 */
+    position: relative;
+    overflow: hidden;
+    }
+
+    /* 光のライン */
+    .container::before {
+     content: "";
+     position: absolute;
+     top: 0;
+     left: -50%;
+     width: 200%;
+     height: 100%;
+     background: linear-gradient(
+      120deg,
+      transparent,
+      rgba(255,255,255,0.3),
+      transparent
+     );
+     animation:shine 3s infinite;
+    }
+
+    @keyframes shine{
+      0%{
+        transform: translateX(-100%);
+      }
+      100%{
+        transform: translateX(100%);
+      }
+    }
+
+    /* 入力欄 */
+    input {
+     width: 100%;
+     padding: 14px;
+     margin-top: 14px;
+
+     border-radius: 12px;
+     border: none;
+     outline: none;
+
+     background: rgba(255,255,255,0.6);
+     color: #1f2937;
+
+     font-size: 14px;
+
+     transition: 0.2s;
+    }
+
+    /* フォーカスで光る */
+    input:focus {
+     background: rgba(255,255,255,0.15);
+     box-shadow: 0 0 0 2px #3b82f6;
+    }
+
+    input::placeholder {
+     color: #9ca3af;
+    }
+
+    /* ボタン */
+    button {
+     margin-top: 14px;
+     width: 100%;
+     padding: 12px;
+     border: none;
+     border-radius: 10px;
+     background: linear-gradient(135deg, #3b82f6, #2563eb);
+     color: white;
+     cursor: pointer;
+     transition: 0.2s;
+     box-shadow: 0 10px 20px rgba(59,130,246,0.4);
+    }
+
+    /* ホバーで浮く */
+    button:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 15px 30px rgba(59,130,246,0.6);
+    }
+
+    /* 押した感 */
+    button:active {
+     transform: scale(0.98);
+    }
+
+    /* QR表示 */
+    #qrcode {
+     margin-top: 24px;
+     display: flex;
+     justify-content: center;
+
+     padding: 16px;
+     border-radius: 16px;
+
+     background: rgba(255,255,255,0.6);
+    }
+
+    #qrcode {
+     opacity: 0;
+     transform: translateY(10px);
+     transition: 0.4s;
+    }
+
+#qrcode.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+    /* 表示時 */
+    #qrcode.show {
+     opacity: 1;
+     transform: translateY(0);
+    }
+
+    h2 {
+     font-family: 'Kiwi Maru', serif;
+     font-size: 24px;
+     margin-bottom: 10px;
+
+     color: #1f2937;
+
+     /* ふんわり影 */
+     text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+     background: linear-gradient(135deg, #60a5fa, #a78bfa);
+     -webkit-background-clip: text;
+     -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+     transition: 0.3s;
+    }
+
+    h2:hover {
+     transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>🍳QRキッチン</h2>
+
+    <input id="text" placeholder="URL or text">
+
+    <input type="color" id="colorPicker" value="#000000">
+
+    <button onclick="generateQR()">生成</button>
+
+    <button onclick="downloadQR()">ダウンロード</button>
+
+    <div id="qrcode"></div>
+  </div>
+
+  <script>
+    let qr;
+
+    function generateQR() {
+     const text = document.getElementById("text").value;
+     const color = document.getElementById("colorPicker").value;
+
+     if (!text) return;
+
+     const qrDiv = document.getElementById("qrcode");
+     qrDiv.innerHTML = "";
+     qrDiv.classList.remove("show");
+
+     qr = new QRCodeStyling({
+      width: 200,
+      height: 200,
+      data: text,
+      dotsOptions: {
+       color: color,
+       type: "rounded"
+      },
+      backgroundOptions: {
+       color: "#ffffff"
+      }
+     });
+
+     qr.append(qrDiv);
+
+     setTimeout(() => {
+      qrDiv.classList.add("show");
+     }, 100);
+    }
+
+    function downloadQR() {
+     const img = document.querySelector("#qrcode img");
+
+     if (!img) {
+       alert("先にQRコードを生成してね！");
+       return;
+      }
+
+      const link = document.createElement("a");
+      link.href = img.src;
+      link.download = "qr-code.png";
+
+      link.click();
+    }
+  </script>
+
+</body>
+</html>
